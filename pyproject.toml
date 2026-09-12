@@ -9,6 +9,7 @@ description = "Time-series-safe stock prediction and backtesting for US and A-sh
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+  "akshare>=1.18.94",
   "numpy>=1.26",
   "pandas>=2.1",
   "scikit-learn>=1.4",

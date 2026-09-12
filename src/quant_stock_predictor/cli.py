@@ -15,13 +15,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--end", default=None)
     parser.add_argument("--train-ratio", type=float, default=0.7)
     parser.add_argument("--threshold", type=float, default=0.55)
+    parser.add_argument(
+        "--adjust",
+        choices=["hfq", "qfq", "none"],
+        default="hfq",
+        help="A-share adjustment: hfq (default), qfq, or none",
+    )
     parser.add_argument("--output", type=Path, default=Path("outputs"))
     return parser
 
 
 def main() -> None:
     args = build_parser().parse_args()
-    prices = download_prices(args.ticker, args.start, args.end)
+    adjust = "" if args.adjust == "none" else args.adjust
+    prices = download_prices(args.ticker, args.start, args.end, adjust=adjust)
     features = build_features(prices).dropna(subset=FEATURE_COLUMNS)
     dataset = build_labeled_dataset(prices)
     result = backtest(dataset, args.train_ratio, args.threshold)
@@ -38,6 +45,7 @@ def main() -> None:
 
     symbol = normalize_ticker(args.ticker)
     print(f"Ticker: {symbol}")
+    print(f"Data source: {prices.attrs.get('data_source', 'unknown')}")
     print(f"Latest feature date: {latest.index[-1].date()}")
     print(f"Next-session up probability: {probability:.2%}")
     signal = "LONG" if probability >= args.threshold else "CASH"

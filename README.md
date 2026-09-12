@@ -6,8 +6,9 @@
 
 ## 功能
 
-- 支持美股代码，例如 AAPL、NVDA
-- 支持 6 位 A 股代码自动补全交易所后缀，例如 600519 转为 600519.SS
+- A 股默认使用 AkShare 的 stock_zh_a_hist 接口
+- 美股继续使用 yfinance，例如 AAPL、NVDA
+- 支持沪深京 6 位代码自动识别，例如 600519、000001、北交所 8 开头代码
 - 生成收益率、均线偏离、波动率、RSI、量价等特征
 - 使用逻辑回归输出下一交易日上涨概率
 - 按时间切分训练集和测试集，避免随机切分造成未来数据泄漏
@@ -23,11 +24,14 @@ quant-stock-predict AAPL --start 2018-01-01
 quant-stock-predict 600519 --start 2018-01-01 --threshold 0.55
 ```
 
+为了让历史收益序列更适合回测，A 股默认使用后复权 hfq；可通过
+`--adjust qfq` 改为前复权，或通过 `--adjust none` 使用不复权数据。
+
 结果保存在 outputs 目录，包括 predictions.csv 和 equity_curve.csv。
 
 ## 下一步路线
 
-1. 引入 AkShare/Tushare，补充 A 股复权行情、财务和资金面数据。
+1. 补充 A 股财务、估值和资金面数据。
 2. 增加多股票横截面选股与基准指数比较。
 3. 使用 walk-forward 走步训练、手续费和滑点模型。
 4. 增加财报、估值、13F 和事件驱动特征。
